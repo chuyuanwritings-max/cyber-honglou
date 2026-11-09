@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>赛博红楼</title>
+<title>蒸汽红楼（暂名）</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap">
 <style>
-/* 布局：赛博夜城，一列竖屏——顶栏（季、头像、目标、步数）→ 8 比特棋盘 → 手里/下一个/储物格 → 技能栏；弹层做选人、季末、商店。刻意只做深色一种外观，不跟随系统 */
+/* 布局：黄昏浮空园（宫崎骏式蒸汽朋克），一列竖屏——顶栏（季、头像、目标、步数）→ 8 比特棋盘 → 手里/下一个/储物格 → 技能栏；弹层做选人、季末、商店。刻意只做深色一种外观，不跟随系统 */
 :root{
-  --bg:#0D0E1C;       /* 夜城底 */
-  --panel:#1A1933;    /* 面板 */
-  --panel2:#25234A;   /* 按下 / 次级面板 */
-  --line:#05050C;     /* 描边、硬阴影 */
-  --fg:#EAF2FF;       /* 字 */
-  --mut:#8F9AC4;      /* 次要字 */
-  --pink:#FF4FD0; --lemon:#FFE45C; --mint:#B6FF3D; --sky:#38F0FF; --violet:#9B7BFF; --orange:#FF9F45;
+  --bg:#1E1620;       /* 黄昏暗底 */
+  --panel:#2E2230;    /* 面板 */
+  --panel2:#3D2D3C;   /* 按下 / 次级面板 */
+  --line:#0E080C;     /* 描边、硬阴影 */
+  --fg:#FFF1DE;       /* 字：暖白 */
+  --mut:#C8A99A;      /* 次要字 */
+  --pink:#FF8FA3; --lemon:#FFD36B; --mint:#A8DC7E; --sky:#8FD0EC; --violet:#B79BE0; --orange:#F2A05A;
   --display:"ZCOOL QingKe HuangYou","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   --body:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
   color-scheme:dark;
@@ -41,7 +41,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:8px
 canvas#cv{image-rendering:pixelated;image-rendering:crisp-edges;display:block;touch-action:manipulation;cursor:pointer;max-width:100%;transition:transform .12s ease-out}
 canvas#cv.punch{transform:scale(1.045);transition:none}
 canvas#cv.punch2{transform:scale(1.08) rotate(-.6deg);transition:none}
-.banner{position:absolute;left:50%;top:38%;filter:drop-shadow(0 0 6px rgba(255,79,208,.55));transform:translate(-50%,-50%);pointer-events:none;font-family:var(--display);
+.banner{position:absolute;left:50%;top:38%;filter:drop-shadow(0 0 6px rgba(255,190,90,.5));transform:translate(-50%,-50%);pointer-events:none;font-family:var(--display);
   font-size:44px;line-height:1;white-space:nowrap;color:var(--lemon);
   text-shadow:3px 0 0 var(--line),-3px 0 0 var(--line),0 3px 0 var(--line),0 -3px 0 var(--line),4px 4px 0 var(--line);
   animation:bn 1.1s steps(12) forwards}
@@ -160,7 +160,7 @@ button.go{background:var(--mint);color:var(--line)}
     <button id="soundBtn" aria-pressed="true" aria-label="声音"><img class="ico s" id="soundIco" alt=""></button>
   </div>
   <div class="tip" id="tip">点一下看预览，再点一下放下</div>
-  <div class="note">原型 2.0 · 赛博红楼 · 8 比特代码绘制 · Kira</div>
+  <div class="note">原型 2.1 · 宫崎骏式蒸汽朋克 · 8 比特代码绘制 · Kira</div>
 </div>
 
 <div class="overlay" id="ov" hidden><div class="card px" id="ovCard"></div></div>
@@ -182,21 +182,21 @@ const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').match
 const PAL={k:'#2B1B3D',w:'#FFF8F0',W:'#FFFFFF',p:'#FF7EB6',P:'#D94F8F',b:'#5EC8FF',B:'#2E8FD6',g:'#6EE7A8',G:'#2FB377',
   y:'#FFE45C',Y:'#E0A82E',o:'#FF9F45',O:'#D96A1F',v:'#A98BFF',V:'#6F55D9',n:'#C98A63',N:'#8A5A44',s:'#D8D0E6',S:'#9A90B5',
   f:'#FFDCC8',F:'#E9A98E',h:'#4A3566',c:'#8FDCC4',C:'#4FA38E',q:'#F7BE95',Q:'#D98A5E',r:'#F0506A',R:'#B32E4A',x:'#0C0815',
-  e:'#38F0FF',E:'#1A9FD0',m:'#FF3DCB',M:'#B01E8E',l:'#B6FF3D',L:'#5FB81E',d:'#3A3550',t:'#24203A',u:'#C8D4F0',U:'#8890B8'};
+  e:'#E8B04A',E:'#A8742A',m:'#F27C8E',M:'#B84A62',l:'#9BD66E',L:'#4E8F3E',d:'#6A4636',t:'#3E2A24',u:'#E6CFA0',U:'#A8875A'};
 /* ---------- 像素图：园子里的东西（11×11） ---------- */
 const SP={
- T1:["...........","..k.k.k.k..",".kkkkkkkkk.","kkdddddddkk",".kdeeeeedk.","kkdeEmEedkk",".kdeeeeedk.","kkdddddddkk",".kkkkkkkkk.","..k.k.k.k..","..........."],
+ T1:["...........","....kkk....","...keuek...","..keuueEk..","..keueeEk..","..kEeeEEk..","...kEEEk...","....kLk....","...kllk....","....kk.....","..........."],
  T2:["...........","..kk...kk..",".kllk.kllk.",".klLlklLlk.","..klLkLlk..","...kkekk...",".....ek....","....kek....","..kdddddk..","..kdeeedk..","...kkkkk..."],
  T3:["....kkk....","...kmmmk...","..kmMmMmk..","..kmmemmk..","..kmMmMmk..","...kmmmk...","....kek.kk.",".kk.kekklk.",".klkkekLk..","..kdddddk..","...kkkkk..."],
- T4:["...kkkkk...","..kvvvevk..",".kvevvvvVk.","kvvvvmvvVVk","kvevvvvveVk","kvvvmvvvvVk","kVvevvvmVVk",".kVVvvvVVk.","..kkkdkkk..","....kdk....","...kkkkk..."],
- T5:["..kkkkkkk..",".kpppmpppk.","kpWppppmpPk","kPPPPPPPPPk","kpmpppWppPk",".kPPPPPPPk.","..kkkdkkk..","....kdk....","....kek....","...kdddk...","..kkkkkkk.."],
- T6:[".....k.....","....kmk....","...kmmmk...","..kmmMmmk..",".kkkkkkkkk.","keeeeeeeeek",".kkkkkkkkk.","..kek.kek..","..kek.kek..",".kkkkkkkkk.","kdddddddddk"],
- T7:["....kek....","....kek....","..kkkkkkk..","..kdedmdk..","..kdddddk..","..kdmdedk..","..kdddddk..",".kkdedmdkk.",".kdddddddk.","kddedmdeddk","kkkkkkkkkkk"],
- R1:["...........","...........","...........","....kkk....","...kuuUk...","..kuWuUUk..","..kuukUUk..",".kuuuUUUUk.",".kUUUUUUUk.","..kkkkkkk..","..........."],
- R2:["...kkk.....","..kuuUk....","..kuWUk.kk.",".kuuUUkkUk.",".kuUeUUUUk.","kuWuUUUUmUk","kuuuUUUkUUk","kUuUUUkekUk","kUUUUUUkUUk","keeeeeeeeek","kkkkkkkkkkk"],
+ T4:["...kkkkk...","..kgggmgk..",".kgmggggGk.","kggggmggGGk","kgmgggggmGk","kggggmgggGk","kGgmggggGGk",".kGGgggGGk.","..kkkNkkk..","....kNk....","...kkkkk..."],
+ T5:["..kkkkkkk..",".kpppWpppk.","kpWppppPpPk","kpppPpppPPk","kpPpppWppPk",".kPPpPPPPk.","..kkkNkkk..","....kNk....","....kNk....","...kNNNk...","..kkkkkkk.."],
+ T6:[".....k.....","....kek....","...kccck...","..kccCcck..",".kkkkkkkkk.","keeeeeeeeek",".kkkkkkkkk.","..kNk.kNk..","..kNk.kNk..",".kkkkkkkkk.","kuuuuuuuuUk"],
+ T7:["....kek....","...kcCck...","..kcccCck..","..kkkkkkk..","..kuWWWuk..","..kWkeWWk..","..kWWkWWk..","..kuWWWuk..",".kkkkkkkkk.",".kNbNNNbNk.","kkkkkkkkkkk"],
+ R1:["...........","...........","....k.k....","...kUkUk...","..kUuuuUk..","..kuukuuk..","..kUuuuUk..","...kUkUk...","....k.k....","...........","..........."],
+ R2:["..kk...W...","..kUk.W.W..","..kUk..W...","..kUkkkkk..",".kkUkuuuUk.","kuuuuueuuUk","kuWuuuuuUUk","kuuuuuuuUUk","kUuUUkeUUUk","kNNNNNNNNNk","kkkkkkkkkkk"],
  X1:["...........","...........","....kkk....","..kkWWWkk..",".kWWWWWWWk.",".kWWbWWWWk.","kWWWWWWbWWk","kbWWWWWWWbk","kbbWWbWWbbk",".kbbbbbbbk.","..kkkkkkk.."],
- D: [".....k.....","....kek....","....kek....","...keeek...","..keWeeek..","..keWeeEk..","..keeeeEk..","..keeeEEk..","...kEEEk...","....kkk....","..........."],
- B: ["..kkkkkkk..","..kuuuuuk..",".....k.....","...kkkkk...","..kdddddk..",".kddrrrddk.",".kdrWrrrdk.",".kddrrrddk.","..kdddddk..","..kk...kk..","..k.....k.."],
+ D: [".....k.....","....kbk....","....kbk....","...kbbbk...","..kbWbbbk..","..kbWbbBk..","..kbbbbBk..","..kbbbBBk..","...kBBBk...","....kkk....","..........."],
+ B: ["....kk.....","...kek.....","....k......","..kkkkkk...",".keeeeeEk..","keWeeeeEEk.","kerreeeEkek","keeeeeeEkk.",".kEEEEEk...","..kk.kk....","..k...k...."],
  W: ["kkkkkkkkkkk","kdddddddddk","kdudddddudk","kdddddddddk","kdtdtdtdtdk","kdddddddddk","kdtdtdtdtdk","kdddddddddk","kdudddddudk","kdddddddddk","kkkkkkkkkkk"]
 };
 /* ---------- 像素图：头像（16×16）、技能、道具、界面图标（12×12） ---------- */
@@ -224,7 +224,7 @@ const ICON={
  autumn:[".....kk.....","....kOok....","..kkkoOkkk..",".kOoooOoooOk","..kOooOooOk.","...kooOook..","..kOooOooOk.",".kkOkkOkkOkk","....kkOkk...","......kN....",".......kN...","............"],
  heart:["............",".kkk..kkk...","kpPPkkpPPk..","kpPPPpPPPk..","kPPPPPPPPk..",".kPPPPPPk...","..kPPPPk....","...kPPk.....","....kk......","............","............","............"],
  xmark:["kk......kk..","krk....krk..",".krk..krk...","..krkkrk....","...krrk.....","..krkkrk....",".krk..krk...","krk....krk..","kk......kk..","............","............","............"],
- rain:["...kkkkk....","..kUUUUUkk..",".kUUuUUUUUk.","kUUUUUUUUUUk","kddddddddddk",".kkkkkkkkkk.","..l..l..l...",".l..l..l..l.","....l..l..l.","..l..l..l...",".l..l.......","............"],
+ rain:["...kkkkk....","..kSSSSSkk..",".kSSsSSSSSk.","kSSSSSSSSSSk","kddddddddddk",".kkkkkkkkkk.","..S..S..S...",".S..S..S..S.","....S..S..S.","..S..S..S...",".S..S.......","............"],
  cicada:["............","..k......k..","...k....k...","..kkkkkkkk..",".kGgkGGkgGk.","kWkGGGGGGkWk","kWWkGGGGkWWk","kWWkGGGGkWWk",".kWkGNNGkWk.","..kkGNNGkk..","....kNNk....",".....kk....."],
  wind:["............","..ssssss....","........s...","sssssssss.s.","..........s.",".sssssssss..","............","WWWWWWW..g..",".......W.gG.","..WWWWW...g.","............","............"],
  snowb:[".....b......","..b..W..b...","...b.W.b....","....bWb.....","bWWWWWWWWWb.","....bWb.....","...b.W.b....","..b..W..b...",".....b......","............","............","............"],
@@ -235,13 +235,13 @@ const ICON={
  magpie:["............","....kkk.....","...kkWkk....","...kkkkyk...","..kkWWkk....",".kkWWWWkk...","kBkWWWWkkk..","kBBkkkkkkkk.",".kBBk..kBBBk","..kk....kkk.","....k.k.....","............"],
  cat:["............",".k.......k..",".kk.....kk..",".kWkkkkkWk..",".kWWWWWWWk..","kWWkWWWkWWk.","kWWWWpWWWWk.",".kWWWWWWWk..","..kWWWWWkk.k","..kWkWkWk.kW","..kkkkkkkkWk","..........k."],
  fert:["....kkkk....","...kNkkNk...","....kNNk....","...knnnnk...","..knnnnnnk..",".knngggnnnk.",".knggGggnnk.",".knnggGnnnk.",".knnnnnnnnk.",".kNnnnnnnNk.","..kNNNNNNk..","...kkkkkk..."],
- egg:["............","....kkkk....","...kmmmmk...","..kmWmmmMk..","..kmmmmmMk..","..kkkkkkkk..","..keeeeeEk..","..keWeeeEk..","..keeeeeEk..","...keeeEk...","....kkkk....","............"],
- seedpack:["............","..k.k.k.k...",".kkkkkkkkk..",".kdddddddk..","kkdeeeeedkk.",".kdeEEEedk..","kkdeeeeedkk.",".kdddddddk..",".kkkkkkkkk..","..k.k.k.k...","............","............"],
+ egg:["............",".....kk.....","....keek....","...keuuek...","..keueeeEk..","..keeeeeEk..","..kEkkkkEk..","..keeeeeEk..","...kEeeEk...","....kkkk....","............","............"],
+ seedpack:["............","....kGk.....","...kgGgk....","....kGk.....","..kkkkkkk...","..kuuuuuk...","..kuNuNuk...","..kuuNuuk...","..kuNuNuk...","..kuuuuuk...","..kkkkkkk...","............"],
  ore:["............","............","....kkkk....","...kSssvk...","..kSsvvsSk..","..ksvVvssk..","..kSsvsSSk..","...kSSSSk...","....kkkk....","............","............","............"],
  hand:["....kk......","...kWWk.....","...kWWk.....","...kWWkkk...","...kWWkWWkk.",".kkkWWkWWkWk","kWWkWWWWWkWk","kWWWWWWWWWWk",".kWWWWWWWWWk","..kWWWWWWWk.","...kWWWWWk..","...kkkkkkk.."],
  plus:["....kkk.....","....kgk.....","..kkkgkkk...","..kgggggk...","..kkkgkkk...","....kgk.....","....kkk.....","............","............","............","............","............"]
 };
-const NAME={X1:'冰码',T1:'芯片',T2:'光苗',T3:'霓虹花',T4:'光纤丛',T5:'全息海棠',T6:'霓虹亭',T7:'数据楼',R1:'废件',R2:'机械山',D:'液光',B:'巡检机',W:'断格'};
+const NAME={X1:'霜',T1:'铜籽',T2:'嫩芽',T3:'花',T4:'花丛',T5:'海棠树',T6:'铜亭',T7:'钟楼',R1:'废齿轮',R2:'锅炉山',D:'露水',B:'发条机',W:'断格'};
 const NEXT={T1:'T2',T2:'T3',T3:'T4',T4:'T5',T5:'T6',T6:'T7',T7:null,R1:'R2',R2:null};
 const PTS={T2:2,T3:6,T4:18,T5:50,T6:140,T7:400,R2:12};
 const TERMINAL={T7:1500,R2:150};
@@ -313,9 +313,9 @@ function noise(d=0.15,vol=0.06,delay=0){if(!soundOn)return;try{if(!AC)AC=new (wi
 const SCALE_NOTES=[523,587,659,784,880,1047,1175,1319,1568,1760];
 
 /* ---------- 规则数据 ---------- */
-const BOSS={rain:{n:'酸雨',ico:'rain',fx:'开局 落下 {R1}×4'},cicada:{n:'噪声',ico:'cicada',fx:'{bag} 锁住'},
- wind:{n:'磁暴',ico:'wind',fx:'每 5 步 刮走 {T2}'},snow:{n:'寒潮',ico:'snowb',fx:'每 4 步 冻住一格 {X1}'}};
-/* 每季一张手工地图：# 断格  + 插座（在上面合成 ×2）  r 开局的废件。一季三关共用这张棋盘，不清空 */
+const BOSS={rain:{n:'煤雨',ico:'rain',fx:'开局 落下 {R1}×4'},cicada:{n:'汽笛',ico:'cicada',fx:'{bag} 锁住'},
+ wind:{n:'狂风',ico:'wind',fx:'每 5 步 刮走 {T2}'},snow:{n:'霜冻',ico:'snowb',fx:'每 4 步 冻住一格 {X1}'}};
+/* 每季一张手工地图：# 断格  + 铜盘（在上面合成 ×2）  r 开局的废件。一季三关共用这张棋盘，不清空 */
 const MAPS=[
  ["......",".+....","....r.","..#...","....+.","r....."],
  ["#.....","..+...",".r##..","..##r.","...+..","......"],
@@ -332,17 +332,17 @@ const CHARS=[
  {id:'xiangyun',n:'湘云',skill:'醉眠',ico:'nap',short:'挪一格 ×2',uses:2}
 ];
 const BEINGS=[
- {id:'twin',n:'双生芯',kind:'plant',desc:'{T3} 以上，2 个就合'},
- {id:'bamboo',n:'光纤竹',kind:'plant',desc:'合出 {T5}，旁边 {T1} → {T2}'},
- {id:'pavilion',n:'全息亭',kind:'plant',desc:'挨着 {T6}{T7} 合成：倍数 +2'},
- {id:'link',n:'共振线',kind:'plant',desc:'连锁倍数翻倍长'},
- {id:'bag',n:'机械鹊',kind:'animal',ico:'magpie',desc:'储物格 +1'},
- {id:'soil',n:'机械鹤',kind:'animal',ico:'crane',desc:'{B} 报废变 {T3}，不变 {R1}'},
- {id:'cherish',n:'光蝶',kind:'animal',ico:'butterfly',desc:'关末：棋盘上 {T3} 以上再算一次分'},
- {id:'sprout',n:'数据锦鲤',kind:'animal',ico:'koi',desc:'每关开局送 2 {T2}'},
- {id:'nostone',n:'义体猫',kind:'animal',ico:'cat',desc:'地图和酸雨的 {R1} 变 {T1}'},
- {id:'stone',n:'量子石',kind:'gem',desc:'{R1}{R1}{R1} → {R2}：分 ×4'},
- {id:'dew',n:'冷却瓶',kind:'gem',desc:'每关袋里 +2 {D}'}
+ {id:'twin',n:'并蒂铜莲',kind:'plant',desc:'{T3} 以上，2 个就合'},
+ {id:'bamboo',n:'铜管竹',kind:'plant',desc:'合出 {T5}，旁边 {T1} → {T2}'},
+ {id:'pavilion',n:'亭前海棠',kind:'plant',desc:'挨着 {T6}{T7} 合成：倍数 +2'},
+ {id:'link',n:'连动齿轮',kind:'plant',desc:'连锁倍数翻倍长'},
+ {id:'bag',n:'发条鹊',kind:'animal',ico:'magpie',desc:'储物格 +1'},
+ {id:'soil',n:'铜鹤',kind:'animal',ico:'crane',desc:'{B} 报废变 {T3}，不变 {R1}'},
+ {id:'cherish',n:'纸蝶',kind:'animal',ico:'butterfly',desc:'关末：棋盘上 {T3} 以上再算一次分'},
+ {id:'sprout',n:'铜鳞锦鲤',kind:'animal',ico:'koi',desc:'每关开局送 2 {T2}'},
+ {id:'nostone',n:'机关猫',kind:'animal',ico:'cat',desc:'地图和煤雨的 {R1} 变 {T1}'},
+ {id:'stone',n:'蒸汽石',kind:'gem',desc:'{R1}{R1}{R1} → {R2}：分 ×4'},
+ {id:'dew',n:'露水瓶',kind:'gem',desc:'每关袋里 +2 {D}'}
 ];
 const SHOP=BEINGS;
 const BK={plant:{emb:'seedpack',need:3},animal:{emb:'egg',need:4},gem:{emb:'ore',need:5}};
@@ -417,7 +417,7 @@ function pop(x,y,base,mult,col){FX.pops.push({x,y,base,mult,col,life:60,age:0});
 function banner(text,cls=''){if(RM&&cls==='')return;const st=document.getElementById('stage');const d=document.createElement('div');d.className='banner '+cls;d.textContent=text;st.appendChild(d);setTimeout(()=>d.remove(),1200);}
 function punch(big){if(RM)return;cv.classList.remove('punch','punch2');void cv.offsetWidth;cv.classList.add(big?'punch2':'punch');setTimeout(()=>cv.classList.remove('punch','punch2'),90);}
 const COLS={T2:['l','L','W'],T3:['m','M','e','W'],T4:['v','e','m','W'],T5:['p','m','W','e'],T6:['m','e','y','W'],T7:['e','m','y','v','W'],R2:['u','U','W','e'],R1:['u','U','r','W'],clear:['y','m','e','l','v','W']};
-const PRAISE={3:['好！','妙！','漂亮！'],4:['绝了！','神来之笔！','满屏霓虹！']};
+const PRAISE={3:['好！','妙！','漂亮！'],4:['绝了！','神来之笔！','满园春色！']};
 
 /* 爆炸分级：1 小合 · 2 中合 · 3 大合 · 4 满园 */
 function level(tier,chain,terminal){if(terminal)return 4;const e=(tier-2)+(chain-1)*2;return e<=0?1:e<=2?2:e<=4?3:4;}
@@ -457,13 +457,13 @@ async function place(r,c){
 async function bossTick(){
   const se=SEASONS[S.season];if(!se.boss||S.tut)return;
   if(se.boss==='wind'&&S.steps%5===0){const t=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(S.board[r][c]==='T1'||S.board[r][c]==='T2')t.push([r,c]);
-    if(t.length){const [r,c]=t[Math.floor(Math.random()*t.length)];const [x,y]=cellXY(r,c);burst(x+8,y+8,[PAL.g,PAL.o,PAL.W],12);S.board[r][c]=null;noise(0.3,0.05);FX.shake=2;tip('磁暴刮走了一株');ui();await wait(350);}}
-  if(se.boss==='snow'&&S.steps%4===0){const [r,c]=randEmpty();if(r!=null){S.board[r][c]='X1';const [x,y]=cellXY(r,c);burst(x+8,y+8,[PAL.W,PAL.b],10);tone(1400,0.15,'triangle',0.03,0,0.5);FX.bounce[r+','+c]=8;tip('寒潮冻住一格');ui();await wait(300);}}
+    if(t.length){const [r,c]=t[Math.floor(Math.random()*t.length)];const [x,y]=cellXY(r,c);burst(x+8,y+8,[PAL.g,PAL.o,PAL.W],12);S.board[r][c]=null;noise(0.3,0.05);FX.shake=2;tip('狂风刮走了一株');ui();await wait(350);}}
+  if(se.boss==='snow'&&S.steps%4===0){const [r,c]=randEmpty();if(r!=null){S.board[r][c]='X1';const [x,y]=cellXY(r,c);burst(x+8,y+8,[PAL.W,PAL.b],10);tone(1400,0.15,'triangle',0.03,0,0.5);FX.bounce[r+','+c]=8;tip('霜冻住一格');ui();await wait(300);}}
 }
 function bossIntro(se){const b=BOSS[se.boss];
   openOv(`<h2>${img(b.ico,'l')}<span class="kw-p">${b.n}</span></h2><div class="hrow" style="font-size:18px">${fmt(b.fx)}</div><button class="go" id="bossOk">来吧</button>`);
   document.getElementById('bossOk').addEventListener('click',closeOv);tone(196,0.3,'square',0.05,0,0.7);}
-/* 巡检机：每回合往旁边空格走一格；一群巡检机被围得一格都走不了，就一起报废成废件 */
+/* 发条机：每回合往旁边空格走一格；一群发条机被围得一格都走不了，就一起报废成废齿轮 */
 async function botsTurn(){
   if(S.tut)return;const nb=S.newBot;const isNew=(r,c)=>nb&&nb[0]===r&&nb[1]===c;
   const bots=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(S.board[r][c]==='B'&&!isNew(r,c))bots.push([r,c]);
@@ -479,7 +479,7 @@ async function botsTurn(){
   for(const g2 of dead){const to=S.relics.has('soil')?'T3':'R1';
     g2.forEach(([y,x])=>{S.board[y][x]=to;const [px,py]=cellXY(y,x);burst(px+8,py+8,(COLS.R1).map(k=>PAL[k]),16,1.2);ring(px+8,py+8,10,PAL.r);FX.bounce[y+','+x]=10;});
     const gain=25*g2.length;S.score+=gain;S.hold=Math.max(S.hold,12);const [px,py]=cellXY(...g2[0]);pop(px+8,py-1,gain,1,PAL.r);
-    noise(0.25,0.07);tone(220,0.2,'sawtooth',0.04,0,0.4);FX.shake=Math.max(FX.shake,3);banner('围住了！','combo');tip('巡检机报废了');ui();await wait(380);
+    noise(0.25,0.07);tone(220,0.2,'sawtooth',0.04,0,0.4);FX.shake=Math.max(FX.shake,3);banner('围住了！','combo');tip('发条机停摆了');ui();await wait(380);
     const last=g2.find(([y,x])=>isNew(y,x))||g2[g2.length-1];await resolveAt(last[0],last[1]);
     for(const [y,x] of g2){if(S.board[y][x]===to)await resolveAt(y,x);}}
 }
@@ -504,7 +504,7 @@ async function mergeStep(grp,r,c,id,chain){
   await wait(160);FX.moving=[];
   // 3) 合成
   let mult=chain+(S.relics.has('link')?chain-1:0);
-  if(S.sock&&S.sock.has(r+','+c)){mult*=2;banner('插座 ×2','combo');}
+  if(S.sock&&S.sock.has(r+','+c)){mult*=2;banner('铜盘 ×2','combo');}
   if(S.relics.has('pavilion')&&neighbors(r,c).some(([y,x])=>S.board[y][x]==='T6'||S.board[y][x]==='T7'))mult+=2;
   let base,res,terminal=false;
   if(nxt){res=nxt;S.board[r][c]=nxt;base=PTS[nxt]*grp.length;if(nxt==='R2'&&S.relics.has('stone'))base*=4;}
@@ -583,7 +583,7 @@ document.getElementById('storeBox').addEventListener('click',swapStore);
 document.getElementById('storeBox').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();swapStore();}});
 function swapStore(){
   if(!S||S.busy)return;
-  if(SEASONS[S.season].boss==='cicada'&&!S.tut){tip('噪声：储物格锁住');tone(150,0.12,'square',0.04);return;}
+  if(SEASONS[S.season].boss==='cicada'&&!S.tut){tip('汽笛：储物格锁住');tone(150,0.12,'square',0.04);return;}
   const i=S.store.findIndex(v=>v===null);
   if(i>=0){S.store[i]=S.cur;S.cur=draw();tip('存起来了');}
   else{const t=S.store[0];S.store[0]=S.cur;S.cur=t;S.store.push(S.store.shift());tip('换出来了');}
@@ -649,14 +649,14 @@ function frame(){
 }
 function render(){
   const se=SEASONS[S.season];
-  g.fillStyle='#0D0E1C';g.fillRect(0,0,W,H);
+  g.fillStyle='#1E1620';g.fillRect(0,0,W,H);
   const sk=FX.shake>0?FX.shake:0;const sx=sk?Math.round((Math.random()*2-1)*sk):0,sy=sk?Math.round((Math.random()*2-1)*sk):0;
   g.save();g.translate(sx,sy);
   // 分数条 + 达标火苗
   const pct=Math.min(1,S.shown/se.target);
   FX.flames.forEach(f=>{g.fillStyle=f.life>12?PAL.y:f.life>6?PAL.o:PAL.r;g.fillRect(Math.round(f.x),Math.round(f.y),1,1);});
-  g.fillStyle=PAL.x;g.fillRect(BAR.x-1,BAR.y-1,BAR.w+2,6);g.fillStyle='#1A1933';g.fillRect(BAR.x,BAR.y,BAR.w,4);
-  g.fillStyle=S.goalHit?(Math.floor(tick/6)%2?PAL.y:PAL.l):PAL.m;g.fillRect(BAR.x,BAR.y,Math.round(BAR.w*pct),4);
+  g.fillStyle=PAL.x;g.fillRect(BAR.x-1,BAR.y-1,BAR.w+2,6);g.fillStyle='#2E2230';g.fillRect(BAR.x,BAR.y,BAR.w,4);
+  g.fillStyle=S.goalHit?(Math.floor(tick/6)%2?PAL.y:PAL.l):PAL.e;g.fillRect(BAR.x,BAR.y,Math.round(BAR.w*pct),4);
   g.fillStyle='rgba(255,255,255,.35)';g.fillRect(BAR.x,BAR.y,Math.round(BAR.w*pct),1);
   const counting=S.shown<S.score&&S.hold<=0;const jx=counting?(tick%2?1:0):0;
   drawNum(g,S.shown,6+jx,3,S.goalHit?PAL.y:PAL.W,2);
@@ -665,12 +665,12 @@ function render(){
   const glowC=FX.glow>0?[PAL.p,PAL.y,PAL.b,PAL.g,PAL.v][Math.floor(tick/4)%5]:PAL.x;
   g.fillStyle=glowC;g.fillRect(BX-2,BY-2,N*CELL+4,N*CELL+4);
   for(let r=0;r<N;r++)for(let c=0;c<N;c++){const [x,y]=cellXY(r,c);
-    if(S.board[r][c]==='W'){g.fillStyle='#05050C';g.fillRect(x,y,CELL,CELL);g.fillStyle='#1B1838';for(let i=0;i<CELL;i+=4){g.fillRect(x+i,y+((i/4)%2?5:11),2,1);}continue;}
-    g.fillStyle=(r+c)%2?'#171B33':'#13172B';g.fillRect(x,y,CELL,CELL);
-    g.fillStyle='#1E2A4A';if((r*7+c*3)%5===0){g.fillRect(x+2,y+13,6,1);g.fillRect(x+8,y+10,1,4);g.fillRect(x+8,y+10,3,1);}
-    if(S.sock&&S.sock.has(r+','+c)){const on=Math.floor((tick+r*9+c*5)/20)%2;g.fillStyle=on?PAL.m:PAL.M;
+    if(S.board[r][c]==='W'){g.fillStyle='#3A2A44';g.fillRect(x,y,CELL,CELL);const sh=Math.floor(tick/30)%CELL;g.fillStyle='#8A6A80';g.fillRect(x+((sh+3)%CELL),y+5,4,1);g.fillRect(x+((sh+10)%CELL),y+11,5,1);g.fillStyle='#1E1620';g.fillRect(x,y,CELL,1);g.fillRect(x,y,1,CELL);continue;}
+    g.fillStyle=(r+c)%2?'#34402A':'#2F3A26';g.fillRect(x,y,CELL,CELL);
+    if((r*7+c*3)%5===0){g.fillStyle='#46573A';g.fillRect(x+3+((r+c)%3)*4,y+12,1,2);g.fillRect(x+4+((r+c)%3)*4,y+11,1,3);}
+    if(S.sock&&S.sock.has(r+','+c)){const on=Math.floor((tick+r*9+c*5)/20)%2;g.fillStyle=on?PAL.e:PAL.E;
       const q=CELL-2,f=(a,b,w,h)=>g.fillRect(x+a,y+b,w,h);f(1,1,3,1);f(1,1,1,3);f(q-2,1,3,1);f(q,1,1,3);f(1,q,3,1);f(1,q-2,1,3);f(q-2,q,3,1);f(q,q-2,1,3);
-      if(!S.board[r][c]){g.fillStyle=on?'#4A1E52':'#3A1842';g.fillRect(x+6,y+6,5,5);g.fillStyle=PAL.m;g.fillRect(x+7,y+8,1,1);g.fillRect(x+9,y+8,1,1);}}}
+      if(!S.board[r][c]){g.fillStyle=on?'#7A5426':'#5E4020';g.fillRect(x+5,y+5,7,7);g.fillStyle=PAL.e;g.fillRect(x+8,y+4,1,9);g.fillRect(x+4,y+8,9,1);g.fillStyle='#3E2A18';g.fillRect(x+7,y+7,3,3);}}}
   // 预览
   if(S.preview){const p=S.preview;const pulse=Math.floor(tick/8)%2;
     if(p.merges){g.fillStyle=pulse?'rgba(255,228,92,.38)':'rgba(255,228,92,.24)';p.cells.forEach(([y,x])=>{const [px,py]=cellXY(y,x);g.fillRect(px,py,CELL,CELL);});}
@@ -687,7 +687,7 @@ function render(){
     g.drawImage(spr(id),x+3+dx,y+3+dy);}
   FX.moving.forEach(m=>{const e=m.t*m.t;g.drawImage(spr(m.id),Math.round(m.sx+(m.tx-m.sx)*e)+3,Math.round(m.sy+(m.ty-m.sy)*e)+3);});
   // 落地的灰
-  FX.dust.forEach(d=>{g.fillStyle='#5A6290';g.fillRect(Math.round(d.x),Math.round(d.y),1,1);});
+  FX.dust.forEach(d=>{g.fillStyle='#8A7A60';g.fillRect(Math.round(d.x),Math.round(d.y),1,1);});
   // 冲击波（菱形）、光环（方形）
   FX.waves.forEach(w=>{g.fillStyle=w.c;const r=Math.round(w.r);for(let i=0;i<=r;i++){const j=r-i;[[i,j],[-i,j],[i,-j],[-i,-j]].forEach(([a,b2])=>g.fillRect(Math.round(w.x+a),Math.round(w.y+b2),1,1));}});
   FX.rings.forEach(r=>{if(r.delay>0)return;g.strokeStyle=r.c;g.lineWidth=1;const s=Math.round(r.r);g.strokeRect(Math.round(r.x-s)+0.5,Math.round(r.y-s)+0.5,s*2,s*2);});
@@ -711,7 +711,7 @@ function closeOv(){ov.hidden=true;}
 function chainRow(){return `<div class="chain">${['T1','T2','T3','T4','T5','T6','T7'].map(id=>simg(id,'')).join('<span class="ar">▸</span>')}</div>`;}
 function showStart(){
   const best=loadBest();let seen=false;try{seen=!!localStorage.getItem('dgy-sanheyi-tut');}catch(e){}
-  openOv(`<h2>赛博红楼</h2>
+  openOv(`<h2>蒸汽红楼 <small style="font-size:14px;color:var(--mut)">暂名</small></h2>
   ${chainRow()}
   <div class="hrow" style="justify-content:center">${simg('T1','')}${simg('T1','')}${simg('T1','')}<span class="chain-eq kw" style="font-family:var(--display);font-size:20px">=</span>${simg('T2','')}<span class="lbl">三个一样，合成一个</span></div>
   <div class="row"><button class="go" id="startBtn" style="flex:1">开始</button><button id="startGarden">${img('home','s')}我的园子</button></div>
@@ -730,11 +730,11 @@ function showHelp(){
   ${chainRow()}
   <div class="hrow">${simg('T1')}${simg('T1')}${simg('T1')}<span class="kw">=</span>${simg('T2')}<span class="lbl">三个一样就合成</span></div>
   <div class="hrow">${simg('T2')}${simg('T2')}${simg('T2')}<span class="kw">=</span>${simg('T3')}<span class="lbl"><span class="kw-p">连锁</span>：倍数 +1</span></div>
-  <div class="hrow">${simg('B')}<span class="lbl"><span class="kw-p">巡检机</span>会乱走，<span class="kw">围住</span>就报废成 ${simg('R1')}</span></div>
+  <div class="hrow">${simg('B')}<span class="lbl"><span class="kw-p">发条机</span>会乱走，<span class="kw">围住</span>就停摆成 ${simg('R1')}</span></div>
   <div class="hrow">${simg('R1')}${simg('R1')}${simg('R1')}<span class="kw">=</span>${simg('R2')}</div>
-  <div class="hrow">${simg('D')}<span class="lbl"><span class="kw-b">液光</span>：自动变最划算的</span></div>
+  <div class="hrow">${simg('D')}<span class="lbl"><span class="kw-b">露水</span>：自动变最划算的</span></div>
   <div class="hrow">${img('bag','s')}<span class="lbl"><span class="kw-g">储物格</span>：先存一样</span></div>
-  <div class="hrow"><span class="kw-p" style="font-family:var(--display);font-size:18px">▣</span><span class="lbl">插座格上合成 <span class="kw">×2</span></span></div>
+  <div class="hrow"><span class="kw" style="font-family:var(--display);font-size:18px">✚</span><span class="lbl">铜盘格上合成 <span class="kw">×2</span></span></div>
   <div class="hrow"><span class="lbl">一季三关<span class="kw">同一盘棋</span>，棋盘<span class="kw-p">满了就输</span></span></div>
   <div class="hrow">${img('fert','s')}<span class="lbl">达标就过关，两格空地 = <span class="kw">1</span>${img('fert','s')}养料</span></div>
   <div class="hrow">${img('seedpack','s')}${img('egg','s')}${img('ore','s')}<span class="lbl">园子里种、孵、养 → 每关<span class="kw">三选一</span>带上</span></div>
@@ -788,7 +788,7 @@ const TUT=[
  {say:'<span class="kw-p">连锁</span>一次，倍数 +1，炸得更大'},
  {say:'不想要的 {R1}，先放进<span class="kw-g">储物格</span>', store:true, setup:()=>{S.cur='R1';S.tutQ=['T1','T1','T2'];}},
  {say:'分数到头就过关<br>棋盘<span class="kw-p">满了就输</span>', bar:true, pos:'bottom'},
- {say:'{B} 巡检机会乱走<br><span class="kw">围住</span>它，就报废成 {R1}'},
+ {say:'{B} 发条机会乱走<br><span class="kw">围住</span>它，就停摆成 {R1}'},
  {say:'去选一位姑娘吧', end:true}
 ];
 let TI=0;const tutEl=document.getElementById('tut'),spotEl=document.getElementById('tutSpot'),sayEl=document.getElementById('tutSay'),handEl=document.getElementById('tutHand');
@@ -839,7 +839,7 @@ window.addEventListener('resize',()=>{if(!tutEl.hidden)tutShow();});
 /* ---------- 我的大观园（局外，存在本机） ---------- */
 const VALUE={T3:1,T4:3,T5:8,T6:20,T7:50,R2:5};
 const MATS=['T3','T4','T5','T6','T7','R2'];
-const LEVELS=[{n:'废台',p:0,size:8},{n:'小院',p:20,size:10},{n:'光园',p:60,size:12},{n:'名园',p:150,size:14},{n:'大观园',p:400,size:16}];
+const LEVELS=[{n:'荒台',p:0,size:8},{n:'小院',p:20,size:10},{n:'花园',p:60,size:12},{n:'名园',p:150,size:14},{n:'大观园',p:400,size:16}];
 const GN=16,GT=12,GM=4;
 let G=loadGarden();
 function loadGarden(){try{const d=JSON.parse(localStorage.getItem('dgy-garden')||'null');if(d&&d.inv&&d.placed)return d;}catch(e){}
@@ -918,7 +918,7 @@ gcv.addEventListener('click',e=>{if(Date.now()-gDragged<120)return;
 function plotTap(i){const p=G.plots[i];
   if(!p.id){if(!G.emb.length)return;p.id=G.emb.shift();p.g=0;tone(440,0.08,'triangle',0.04);gTipT('种下了，打一关长一截，养料能催');}
   else{const b=bOf(p.id),need=BK[b.kind].need;
-    if(p.g>=need){G.owned[p.id]=1;p.id=null;p.g=0;[0,1,2,3].forEach(j=>tone(SCALE_NOTES[j+3],0.12,'square',0.04,j*0.08));for(let k=0;k<6;k++)gPuff(5+Math.floor(Math.random()*6),5+Math.floor(Math.random()*6),[PAL.y,PAL.m,PAL.W,PAL.e]);gTipT(`养成：${b.n}！以后花篮里会出现`);}
+    if(p.g>=need){G.owned[p.id]=1;p.id=null;p.g=0;[0,1,2,3].forEach(j=>tone(SCALE_NOTES[j+3],0.12,'square',0.04,j*0.08));for(let k=0;k<6;k++)gPuff(5+Math.floor(Math.random()*6),5+Math.floor(Math.random()*6),[PAL.y,PAL.m,PAL.W,PAL.l]);gTipT(`养成：${b.n}！以后花篮里会出现`);}
     else if(G.fert>0){G.fert--;p.g++;tone(600,0.06,'square',0.03);gTipT('施了养料');}
     else gTipT('没有养料了，过关省步数能攒');}
   saveGarden();gUI();}
@@ -931,8 +931,8 @@ const WALK={
  xiangyun:{H:'h',d:'r',D:'R',a:'e',rows:["........rr.","..kkkkkkrRr",".kHHHHHHkr.",".kHHHHHHHk.",".kHffffHHk.",".kfkffkffk.",".kffffffk..","..kffffk...","...kkkk....","..kddaddk..",".kdddddddk.","kfkdddddkfk","..kdddddk..","..kDDDDDk..","..kDDDDDk..","...kkkkk...","S"]}};
 function drawWalker(x,y,id,step){const w=WALK[id]||WALK.daiyu;
   w.rows.forEach((row,ry)=>{if(row==='S')row=step?'..k.....k..':'...k...k...';for(let i=0;i<11;i++){const ch=row[i]||'.';if(ch==='.')continue;const key=ch==='H'?w.H:ch==='d'?w.d:ch==='D'?w.D:ch==='a'?w.a:ch;gg.fillStyle=PAL[key]||PAL.k;gg.fillRect(x+i,y+ry,1,1);}});}
-const MINI={crane:["....kk.","...kWr.","....kW.","kkkkkW.","kWWWWWk",".kWWWk.","..k.k.."],koi:[".......","..kkk..",".kmWmk.","kmmmmmk",".kmWmkk","..kkk.k","......."],
- butterfly:["k.....k","kek.kek","keekeek",".kekek.","kek.kek","kk...kk","......."],magpie:["..kk...",".kkWk..","kkkkky.","kWWWk..","kkWWkk.",".kBkk..","..k.k.."],cat:["k...k..","kk.kk..","kekek..","kWWWk.k",".kWWkkW",".kWWWWk",".k.k.k."]};
+const MINI={crane:["....kk.","...kWr.","....kW.","kkkkkW.","kWWWWWk",".kWWWk.","..k.k.."],koi:[".......","..kkk..",".koWok.","kooooek",".koWokk","..kkk.k","......."],
+ butterfly:["k.....k","kWk.kWk","kWWkWWk",".kmkmk.","kWk.kWk","kk...kk","......."],magpie:["..kk...",".kkWk..","kkkkky.","kWWWk..","kkWWkk.",".kBkk..","..k.k.."],cat:["k...k..","kk.kk..","kekek..","kWWWk.k",".kWWkkW",".kWWWWk",".k.k.k."]};
 const miniCv={};const mini=k=>miniCv[k]||(miniCv[k]=(()=>{const c=document.createElement('canvas');c.width=7;c.height=7;const x=c.getContext('2d');MINI[k].forEach((row,y)=>{for(let i=0;i<7;i++){const ch=row[i];if(ch&&ch!=='.'){x.fillStyle=PAL[ch];x.fillRect(i,y,1,1);}}});return c;})());
 /* 地形：0 草 1 花圃 2 石铺 3 水 4 小路 5 树荫 */
 function terrain(){const T=Array.from({length:GN},()=>Array(GN).fill(0));const set=(x,y,v)=>{if(x<0||y<0||x>=GN||y>=GN)return;if(v>T[y][x]||(v===3))T[y][x]=Math.max(T[y][x],v)===3?3:v;};
@@ -947,40 +947,51 @@ function terrain(){const T=Array.from({length:GN},()=>Array(GN).fill(0));const s
   blds.forEach(o=>{for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)put(o.x+a,o.y+b,2);});
   return T;}
 const hsh=(x,y,k=0)=>{let h=(x*374761393+y*668265263+k*2147483647)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967296;};
-const TC={0:['#1C2138','#1A1F35'],1:['#2C1B3C','#311E43'],2:['#36314F','#312C4A'],3:['#0E2C4A','#103254'],4:['#262C48','#232944'],5:['#151A2E','#171C32']};
+const TC={0:['#3A4A2E','#36452B'],1:['#4E3634','#553A37'],2:['#5E544A','#585046'],3:['#2E4C62','#30526A'],4:['#5E4A38','#584534'],5:['#2C3824','#2F3B27']};
 function drawTile(T,c,r,x,y,inside){
   if(!inside)return;
   const v=T[r][c];gg.fillStyle=TC[v][(r+c)%2];gg.fillRect(x,y,GT,GT);
-  if(v===0||v===5){for(let i=0;i<3;i++)if(hsh(c,r,i)<0.5){const px=x+Math.floor(hsh(c,r,i+9)*9)+1,py=y+Math.floor(hsh(c,r,i+19)*8)+2;gg.fillStyle=v===5?'#1F2644':'#2A3458';gg.fillRect(px,py,1,1);}}
-  if(v===1){for(let i=0;i<5;i++){const px=x+Math.floor(hsh(c,r,i)*10),py=y+Math.floor(hsh(c,r,i+7)*10);gg.fillStyle=['#FF3DCB','#FFE45C','#38F0FF','#9B7BFF','#B6FF3D'][Math.floor(hsh(c,r,i+3)*5)];gg.fillRect(px,py,1,1);}}
-  if(v===2){gg.fillStyle='#4A4470';gg.fillRect(x,y+5,GT,1);gg.fillRect(x+((r%2)?3:7),y,1,5);gg.fillRect(x+((r%2)?8:2),y+6,1,5);}
-  if(v===3){gg.fillStyle='#38F0FF';const ph=Math.floor((gTick/20+c+r))%4;gg.fillRect(x+2+ph,y+3,3,1);gg.fillRect(x+6-ph%2,y+8,2,1);}
-  if(v===4){gg.fillStyle='#3A4470';gg.fillRect(x,y+5,GT,2);if(Math.floor(gTick/12+c+r)%4===0){gg.fillStyle='#38F0FF';gg.fillRect(x+4,y+5,2,1);}}
+  if(v===0||v===5){for(let i=0;i<3;i++)if(hsh(c,r,i)<0.5){const px=x+Math.floor(hsh(c,r,i+9)*9)+1,py=y+Math.floor(hsh(c,r,i+19)*8)+2;gg.fillStyle=v===5?'#3A4A2E':'#50633C';gg.fillRect(px,py,1,2);}}
+  if(v===1){for(let i=0;i<5;i++){const px=x+Math.floor(hsh(c,r,i)*10),py=y+Math.floor(hsh(c,r,i+7)*10);gg.fillStyle=['#F27C8E','#FFD36B','#FFF1DE','#B79BE0','#F2A05A'][Math.floor(hsh(c,r,i+3)*5)];gg.fillRect(px,py,1,1);}}
+  if(v===2){gg.fillStyle='#4A4238';gg.fillRect(x,y+5,GT,1);gg.fillRect(x+((r%2)?3:7),y,1,5);gg.fillRect(x+((r%2)?8:2),y+6,1,5);}
+  if(v===3){gg.fillStyle='#9FD0E8';const ph=Math.floor((gTick/20+c+r))%4;gg.fillRect(x+2+ph,y+3,3,1);gg.fillRect(x+6-ph%2,y+8,2,1);}
+  if(v===4){for(let i=0;i<6;i++){gg.fillStyle=hsh(c,r,i)<0.5?'#7A6248':'#4A3A2A';gg.fillRect(x+Math.floor(hsh(c,r,i+4)*11),y+Math.floor(hsh(c,r,i+8)*11),1,1);}}
   // 边：和邻格不同时，交错的像素把两种地面揉在一起
   [[0,-1,'t'],[0,1,'b'],[-1,0,'l'],[1,0,'r']].forEach(([dc,dr,side])=>{const nc=c+dc,nr=r+dr;if(nc<0||nr<0||nc>=GN||nr>=GN)return;const nv=T[nr][nc];if(nv===v)return;
-    const col=nv===3?'#7FEFFF':TC[nv][0];gg.fillStyle=col;
+    const col=nv===3?'#CFEAF5':TC[nv][0];gg.fillStyle=col;
     for(let i=0;i<GT;i++){if((i+r+c)%2)continue;const d=hsh(c,r,i+30)<0.5?1:0;
       if(side==='t')gg.fillRect(x+i,y+d,1,1);if(side==='b')gg.fillRect(x+i,y+GT-1-d,1,1);if(side==='l')gg.fillRect(x+d,y+i,1,1);if(side==='r')gg.fillRect(x+GT-1-d,y+i,1,1);}});
 }
 let gTick=0;
-/* 夜空和脚下的城：玩到越后面的季节，城里亮着的灯越少（外面衰，园子不衰） */
+/* 黄昏的天、云海、脚下的小镇：玩到越后面的季节，小镇亮着的灯越少、冒烟的烟囱越少（外面衰，园子不衰） */
 function drawSkyCity(){const Wd=gbuf.width,Hd=gbuf.height;
-  for(let y=0;y<Hd;y+=4){const k=y/Hd;gg.fillStyle=`rgb(${11+k*14|0},${10+k*4|0},${30+k*16|0})`;gg.fillRect(0,y,Wd,4);}
-  for(let i=0;i<40;i++){const x=Math.floor(hsh(i,1,7)*Wd),y=Math.floor(hsh(i,2,7)*Hd*0.5);if((gTick>>4)%7!==i%7){gg.fillStyle=i%5?'#5A6290':'#C8D4F0';gg.fillRect(x,y,1,1);}}
-  const dk=(S&&S.char&&!S.tut&&S.board)?S.season:0;const lit=Math.max(0.06,0.62-dk*0.05);
-  [[0.42,'#0F1026',3],[0.6,'#090A1A',5]].forEach(([top,col,seed])=>{let x=0,i=0;while(x<Wd){const bw=8+Math.floor(hsh(i,seed,1)*14),bh=Math.floor(Hd*(1-top)*(0.35+hsh(i,seed,2)*0.65));const by=Hd-bh;
-    gg.fillStyle=col;gg.fillRect(x,by,bw,bh);
-    for(let wy=by+3;wy<Hd-2;wy+=4)for(let wx=x+2;wx<x+bw-1;wx+=3){const h=hsh(wx,wy,seed);if(h<lit){const fl=dk>=6&&h<0.02&&(gTick>>3)%3===0;gg.fillStyle=fl?'#F0506A':h<lit*0.3?'#FF3DCB':h<lit*0.6?'#38F0FF':'#E8C860';gg.globalAlpha=seed===3?0.35:0.7;gg.fillRect(wx,wy,1,1);gg.globalAlpha=1;}}
-    if(hsh(i,seed,4)<lit*0.8){gg.fillStyle=hsh(i,seed,5)<0.5?PAL.m:PAL.e;gg.globalAlpha=0.6;gg.fillRect(x+1,by-1,bw-2,1);gg.globalAlpha=1;}
-    x+=bw+1;i++;}});}
+  const sky=[[0,[34,26,51]],[0.45,[90,52,80]],[0.7,[168,92,78]],[1,[120,70,70]]];
+  for(let y=0;y<Hd;y+=2){const k=y/Hd;let a=sky[0],b=sky[1];for(let i=0;i<sky.length-1;i++)if(k>=sky[i][0]&&k<=sky[i+1][0]){a=sky[i];b=sky[i+1];}
+    const t=(k-a[0])/(b[0]-a[0]||1);gg.fillStyle=`rgb(${a[1].map((v,j)=>Math.round(v+(b[1][j]-v)*t)).join(',')})`;gg.fillRect(0,y,Wd,2);}
+  for(let i=0;i<24;i++){const x=Math.floor(hsh(i,1,7)*Wd),y=Math.floor(hsh(i,2,7)*Hd*0.3);if((gTick>>4)%7!==i%7){gg.fillStyle='#E6CFA0';gg.globalAlpha=0.6;gg.fillRect(x,y,1,1);gg.globalAlpha=1;}}
+  // 远处的太阳
+  gg.fillStyle='rgba(255,200,120,.35)';gg.fillRect(Wd*0.72,Hd*0.6,14,6);gg.fillStyle='rgba(255,220,150,.5)';gg.fillRect(Wd*0.72+3,Hd*0.6+1,8,4);
+  const dk=(S&&S.char&&!S.tut&&S.board)?S.season:0;const lit=Math.max(0.05,0.55-dk*0.045);
+  // 小镇：坡顶房子 + 烟囱
+  let x=0,i=0;const base=Hd*0.86;while(x<Wd){const bw=7+Math.floor(hsh(i,3,1)*9),bh=8+Math.floor(hsh(i,3,2)*14),by=base-bh;
+    gg.fillStyle='#3A2632';gg.fillRect(x,by,bw,Hd-by);gg.fillRect(x+1,by-2,bw-2,2);gg.fillRect(x+2,by-3,bw-4,1);
+    if(hsh(i,3,6)<0.5){gg.fillRect(x+bw-3,by-6,2,4);if(hsh(i,3,7)<lit*1.4){for(let k=0;k<3;k++){const sy=by-8-k*3-((gTick/20+i)%3);gg.fillStyle='rgba(200,170,170,.25)';gg.fillRect(x+bw-3+k%2,Math.round(sy),2,2);}}}
+    for(let wy=by+2;wy<base-1;wy+=4)for(let wx=x+2;wx<x+bw-1;wx+=3){const h=hsh(wx,wy,3);if(h<lit){gg.fillStyle=h<lit*0.5?'#FFD36B':'#F2A05A';gg.globalAlpha=0.75;gg.fillRect(wx,wy,1,1);gg.globalAlpha=1;}}
+    x+=bw+1;i++;}
+  gg.fillStyle='#3A2632';gg.fillRect(0,Math.round(base)-1,Wd,Hd-Math.round(base)+1);
+  // 云海，慢慢飘
+  for(let j=0;j<3;j++){const cy=Hd*(0.82+j*0.06);gg.fillStyle=['rgba(214,150,150,.35)','rgba(190,120,130,.45)','rgba(160,100,115,.6)'][j];
+    for(let k=0;k<10;k++){const w=26+Math.floor(hsh(k,j,9)*30),cx=((hsh(k,j,8)*Wd*1.5+gTick*(0.03+j*0.02))%(Wd+60))-30;gg.fillRect(Math.round(cx),Math.round(cy),w,4);gg.fillRect(Math.round(cx)+4,Math.round(cy)-2,w-8,2);}}
+}
 function gFrame(){
   if(!gOpen)return;requestAnimationFrame(gFrame);gTick++;
   const size=LEVELS[lvOf(beauty())].size,off=Math.floor((GN-size)/2);
   drawSkyCity();
   // 园子底座：悬在城市上空
-  {const bx=GM+off*GT,bw=size*GT,by=GM+(off+size)*GT;gg.fillStyle='#0A0A18';gg.fillRect(bx+2,by,bw-4,4);gg.fillRect(bx+6,by+4,bw-12,3);gg.fillRect(bx+bw/2-8,by+7,16,3);
-    gg.fillStyle=PAL.e;for(let i=bx+6;i<bx+bw-6;i+=8)if(Math.floor(gTick/20+i)%3)gg.fillRect(i,by+1,1,1);
-    const fl=Math.floor(gTick/4)%3;gg.fillStyle='rgba(56,240,255,.5)';gg.fillRect(bx+bw/2-2,by+10,4,2+fl);gg.fillStyle='rgba(255,61,203,.35)';gg.fillRect(bx+bw/2-1,by+12+fl,2,3);}
+  {const bx=GM+off*GT,bw=size*GT,by=GM+(off+size)*GT;gg.fillStyle='#4A3428';gg.fillRect(bx,by,bw,4);gg.fillStyle='#3A281F';gg.fillRect(bx+4,by+4,bw-8,4);gg.fillRect(bx+12,by+8,bw-24,4);gg.fillRect(bx+bw/2-10,by+12,20,3);
+    gg.fillStyle='#5A7A3A';for(let i=bx+3;i<bx+bw-3;i+=7)gg.fillRect(i,by+4+(i%3),1,3+(i%4));
+    const sp=Math.floor(gTick/3)%2;[[bx-2,by-6],[bx+bw-5,by-6]].forEach(([px,py])=>{gg.fillStyle=PAL.E;gg.fillRect(px+1,py,2,8);gg.fillStyle=PAL.e;if(sp)gg.fillRect(px-3,py+8,10,1);else gg.fillRect(px+1,py+6,2,5);});
+    gg.fillStyle='rgba(230,207,160,.18)';const pf=Math.floor(gTick/10)%4;gg.fillRect(bx+bw/2-2,by+16+pf,4,2);}
   const TT=terrain();
   for(let r=0;r<GN;r++)for(let c=0;c<GN;c++){const x=GM+c*GT,y=GM+r*GT,inside=c>=off&&r>=off&&c<off+size&&r<off+size;drawTile(TT,c,r,x,y,inside);}
   // 选着东西时，淡淡标出黄金分割点
@@ -988,7 +999,8 @@ function gFrame(){
     gg.fillRect(x,y,2,1);gg.fillRect(x,y,1,2);gg.fillRect(x+GT-2,y,2,1);gg.fillRect(x+GT-1,y,1,2);gg.fillRect(x,y+GT-1,2,1);gg.fillRect(x,y+GT-2,1,2);gg.fillRect(x+GT-2,y+GT-1,2,1);gg.fillRect(x+GT-1,y+GT-2,1,2);});}
   // 篱笆
   const fx=GM+off*GT-1,fy=GM+off*GT-1,fw=size*GT+2;
-  for(let i=0;i<fw;i+=2){gg.fillStyle=Math.floor((i+gTick/3)/8)%2?PAL.m:PAL.M;gg.fillRect(fx+i,fy,1,1);gg.fillRect(fx+i,fy+fw-1,1,1);gg.fillRect(fx,fy+i,1,1);gg.fillRect(fx+fw-1,fy+i,1,1);}
+  gg.fillStyle='#6A4A30';gg.fillRect(fx,fy,fw,1);gg.fillRect(fx,fy+fw-1,fw,1);gg.fillRect(fx,fy,1,fw);gg.fillRect(fx+fw-1,fy,1,fw);
+  gg.fillStyle=PAL.e;for(let i=0;i<fw;i+=6){gg.fillRect(fx+i,fy-1,1,2);gg.fillRect(fx+i,fy+fw-2,1,2);gg.fillRect(fx-1,fy+i,2,1);gg.fillRect(fx+fw-2,fy+i,2,1);}
   // 摆件、动物、小人一起按「脚的位置」排前后；大树 2 倍、亭楼 3 倍，人比花高、比树矮
   const items=[];gg.imageSmoothingEnabled=false;
   G.placed.forEach(o=>{const t=TIER(o.id);const k=t>=6?3:(t===5||o.id==='R2')?2:1;const sz=11*k;
