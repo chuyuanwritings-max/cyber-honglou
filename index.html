@@ -21,17 +21,17 @@
   --body:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
   color-scheme:dark;
 }
-html,body{height:100%}
+html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-.app{max-width:420px;margin:0 auto;padding-block:10px 18px;display:flex;flex-direction:column;gap:10px}
+.app{max-width:420px;margin:0 auto;padding-block:6px 10px;display:flex;flex-direction:column;gap:6px;min-height:100vh;min-height:100dvh;box-sizing:border-box;justify-content:center}
 .px{background:var(--panel);border:2px solid var(--line);box-shadow:3px 3px 0 var(--line)}
 img.ico{image-rendering:pixelated;width:24px;height:24px;flex:none}
 img.ico.s{width:18px;height:18px}
 img.ico.l{width:40px;height:40px}
 img.ico.xl{width:56px;height:56px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 8px;min-height:44px}
 .who{display:flex;align-items:center;gap:6px;min-width:0}
 .season{font-family:var(--display);font-size:22px;line-height:1;letter-spacing:.04em;display:flex;align-items:center;gap:4px}
 .season small{font-family:var(--body);font-size:12px;color:var(--mut);letter-spacing:0}
@@ -49,12 +49,18 @@ canvas#cv.punch2{transform:scale(1.08) rotate(-.6deg);transition:none}
 .banner.goal{top:9%;font-size:30px;color:var(--mint)}
 @keyframes bn{0%{transform:translate(-50%,-50%) scale(.3)}15%{transform:translate(-50%,-50%) scale(1.25)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
 @keyframes cb{0%{transform:translate(-50%,0) scale(.4)}20%{transform:translate(-50%,0) scale(1.3)}35%{transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0}}
-.hand{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
-.slot{padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--mut)}
-.slot canvas{image-rendering:pixelated;width:44px;height:44px}
-.slot.cur canvas{width:66px;height:66px}
-.slot.cur{color:var(--fg)}
+.dock{display:flex;gap:5px;align-items:stretch;height:58px}
+.slot{position:relative;box-sizing:border-box;padding:2px;display:flex;align-items:center;justify-content:center;flex:none;width:48px}
+.slot canvas{image-rendering:pixelated;width:33px;height:33px}
+.slot.cur{width:56px;background:var(--panel2)}
+.slot.cur canvas{width:44px;height:44px}
+.slot.nx{width:36px}
+.slot.nx canvas{width:24px;height:24px;opacity:.75}
+.slot .badge{position:absolute;right:2px;bottom:1px;font-size:10px;color:var(--mut);font-variant-numeric:tabular-nums}
 .slot.store{cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.dock button{box-sizing:border-box;width:44px;flex:none;padding:0}
+.dock .skill{flex:1;width:auto;min-width:52px;font-size:13px;gap:2px}
 .slot.store:focus-visible,button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .bar{display:flex;gap:8px;align-items:stretch}
 button{font-family:var(--body);font-size:14px;color:var(--fg);background:var(--panel);border:2px solid var(--line);box-shadow:3px 3px 0 var(--line);padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
@@ -64,6 +70,7 @@ button.on{background:var(--pink);color:var(--line)}
 button.go{background:var(--mint);color:var(--line)}
 .bar .skill{flex:1;justify-content:flex-start}
 .tip{font-size:12px;line-height:1.5;color:var(--mut);text-align:center;min-height:18px}
+[hidden]{display:none!important}
 .overlay[hidden]{display:none}
 .overlay{position:fixed;inset:0;background:rgba(8,5,14,.72);display:flex;align-items:center;justify-content:center;
   padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:20}
@@ -147,20 +154,16 @@ button.go{background:var(--mint);color:var(--line)}
 
   <div class="stage" id="stage"><canvas id="cv" width="112" height="128" aria-label="棋盘"></canvas></div>
 
-  <div class="hand">
-    <div class="slot cur px"><canvas id="cvCur" width="11" height="11"></canvas><div id="nmCur">手里：种子</div></div>
-    <div class="slot px"><canvas id="cvNext" width="11" height="11"></canvas><div id="nmNext">下一个</div></div>
-    <div class="slot store px" id="storeBox" tabindex="0" role="button" aria-label="储物格：点一下把手里的东西存起来或换出来"><canvas id="cvStore" width="11" height="11"></canvas><div id="nmStore">储物格</div></div>
-  </div>
-
-  <div class="bar">
-    <button class="skill" id="skillBtn"><img class="ico" id="skillIco" alt=""><span id="skillTxt">技能</span></button>
-    <button id="gardenBtn" aria-label="我的大观园"><img class="ico s" id="gardenIco" alt=""></button>
+  <div class="dock" id="dock">
+    <div class="slot cur px" title="手里"><canvas id="cvCur" width="11" height="11"></canvas><span class="sr" id="nmCur">手里</span></div>
+    <div class="slot nx px" title="下一个"><canvas id="cvNext" width="11" height="11"></canvas><span class="sr" id="nmNext">下一个</span></div>
+    <div class="slot store px" id="storeBox" tabindex="0" role="button" aria-label="储物格：点一下把手里的东西存起来或换出来"><canvas id="cvStore" width="11" height="11"></canvas><span class="badge" id="nmStore">0/1</span></div>
+    <button class="skill" id="skillBtn"><img class="ico" id="skillIco" alt=""><span id="skillTxt">×2</span></button>
+    <button id="gardenBtn" aria-label="园子"><img class="ico s" id="gardenIco" alt=""></button>
     <button id="helpBtn" aria-label="怎么玩"><img class="ico s" id="helpIco" alt=""></button>
-    <button id="soundBtn" aria-pressed="true" aria-label="声音"><img class="ico s" id="soundIco" alt=""></button>
   </div>
+  <button id="soundBtn" aria-pressed="true" aria-label="声音" hidden><img class="ico s" id="soundIco" alt=""></button>
   <div class="tip" id="tip">点一下看预览，再点一下放下</div>
-  <div class="note">原型 2.1 · 宫崎骏式蒸汽朋克 · 8 比特代码绘制 · Kira</div>
 </div>
 
 <div class="overlay" id="ov" hidden><div class="card px" id="ovCard"></div></div>
@@ -289,9 +292,12 @@ const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
 const buf=document.createElement('canvas');buf.width=W;buf.height=H;const g=buf.getContext('2d');
 let SCALE=3;
 function fit(){
-  const availW=Math.min(window.innerWidth-32,420),availH=Math.max(260,window.innerHeight-330);
-  SCALE=Math.max(2,Math.min(6,Math.floor(Math.min(availW/W,availH/H))));
-  cv.width=W*SCALE;cv.height=H*SCALE;cv.style.width=W*SCALE+'px';cv.style.height=H*SCALE+'px';ctx.imageSmoothingEnabled=false;
+  // 先量出顶栏和底栏占了多高，剩下的全给棋盘；按手机的真实像素取整放大，像素不糊
+  const dpr=Math.max(1,Math.round(window.devicePixelRatio||1));
+  const used=['header.top','#dock','#tip'].reduce((a,q)=>{const e=document.querySelector(q);return a+(e?e.getBoundingClientRect().height:0);},0)+34;
+  const availW=Math.min(document.querySelector('.app').clientWidth||window.innerWidth-32,420),availH=Math.max(200,window.innerHeight-used);
+  const k=Math.max(dpr,Math.floor(Math.min(availW/W,availH/H)*dpr));SCALE=k/dpr;
+  cv.width=W*k;cv.height=H*k;cv.style.width=(W*k/dpr)+'px';cv.style.height=(H*k/dpr)+'px';ctx.imageSmoothingEnabled=false;
 }
 window.addEventListener('resize',fit);
 
@@ -609,13 +615,13 @@ function ui(){
   document.getElementById('whoIco').src=icoURL(S.char.id);
   document.getElementById('target').textContent=se.target;
   document.getElementById('moves').textContent=emptyN();
-  paintSlot(S.cur,'cvCur');document.getElementById('nmCur').textContent='手里：'+NAME[S.cur];
+  paintSlot(S.cur,'cvCur');document.getElementById('nmCur').textContent='手里：'+NAME[S.cur];document.querySelector('.slot.cur').title='手里：'+NAME[S.cur];
   const nx=peek();paintSlot(nx,'cvNext');document.getElementById('nmNext').textContent='下一个：'+NAME[nx];
   paintSlot(S.store[0],'cvStore');
-  document.getElementById('nmStore').textContent=`储物格 ${S.store.filter(Boolean).length}/${S.store.length}`+(S.store[0]?'：'+NAME[S.store[0]]:'');
+  document.getElementById('nmStore').textContent=`${S.store.filter(Boolean).length}/${S.store.length}`;
   const sb=document.getElementById('skillBtn');document.getElementById('skillIco').src=icoURL(S.char.ico);
-  if(S.char.id==='baochai'){document.getElementById('skillTxt').textContent='金锁：储物格 +1';sb.disabled=true;}
-  else{document.getElementById('skillTxt').textContent=`${S.char.skill} ×${S.uses}`;sb.disabled=S.uses<=0||S.busy;sb.classList.toggle('on',!!S.mode);}
+  if(S.char.id==='baochai'){document.getElementById('skillTxt').textContent='+1';sb.disabled=true;}
+  else{document.getElementById('skillTxt').textContent=`×${S.uses}`;sb.disabled=S.uses<=0||S.busy;sb.classList.toggle('on',!!S.mode);}
 }
 
 /* ---------- 绘制循环 ---------- */
@@ -701,7 +707,7 @@ function render(){
   g.restore();
   FX.petals.forEach(p=>{g.fillStyle=p.c;g.fillRect(Math.round(p.x),Math.round(p.y),2,1);g.fillRect(Math.round(p.x)+1,Math.round(p.y)+1,1,1);});
   if(FX.flash>0){g.fillStyle=`rgba(255,248,240,${FX.flashA})`;g.fillRect(0,0,W,H);}
-  ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(buf,0,0,W*SCALE,H*SCALE);
+  ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(buf,0,0,cv.width,cv.height);
 }
 
 /* ---------- 弹层 ---------- */
@@ -740,8 +746,10 @@ function showHelp(){
   <div class="hrow">${img('seedpack','s')}${img('egg','s')}${img('ore','s')}<span class="lbl">园子里种、孵、养 → 每关<span class="kw">三选一</span>带上</span></div>
   <div class="hrow">${img('home','s')}<span class="lbl">合出的 ${simg('T3')}${simg('T5')}${simg('T6')} 带回<span class="kw-g">园子</span>随便摆</span></div>
   <div class="hrow">${img('rain','s')}${img('cicada','s')}${img('wind','s')}${img('snowb','s')}<span class="lbl">每季第 3 关有 Boss</span></div>
-  <button class="go" id="okHelp">知道了</button>`);
+  <div class="row"><button class="go" id="okHelp" style="flex:1">知道了</button><button id="sndHelp" aria-label="声音"><img class="ico s" src="${icoURL(soundOn?'sound':'mute')}" alt=""></button></div>
+  <div class="note" style="font-size:11px;color:var(--mut);text-align:center">原型 2.2 · 宫崎骏式蒸汽朋克 · 8 比特代码绘制 · Kira</div>`);
   document.getElementById('okHelp').addEventListener('click',closeOv);
+  document.getElementById('sndHelp').addEventListener('click',e=>{document.getElementById('soundBtn').click();e.currentTarget.querySelector('img').src=icoURL(soundOn?'sound':'mute');});
 }
 function gainRow(){const e=S.lastEmb;return `<div class="earn"><span>${img('fert','s')}+${S.lastSaved||0}</span>${e?`<span>${img(BK[bOf(e).kind].emb,'s')}+1</span>`:''}</div>`+earnRow();}
 function showSeasonEnd(pass){
@@ -1026,7 +1034,7 @@ function saveBest(v){try{if(v>loadBest())localStorage.setItem('dgy-sanheyi-best'
 
 /* ---------- 开始 ---------- */
 document.getElementById('helpIco').src=icoURL('help');document.getElementById('gardenIco').src=icoURL('home');document.getElementById('soundIco').src=icoURL('sound');
-fit();
+fit();requestAnimationFrame(fit);
 S={char:CHARS[0],season:0,coins:0,relics:new Set(),bag:['T1'],pile:[],board:[
  [null,'T1','T1',null,'R1',null],['T2','T2',null,'T3',null,null],[null,'T4','T3',null,'T1',null],
  ['R1',null,'T5',null,'T2','T2'],[null,'T6',null,'T1',null,null],['D',null,null,'R2',null,'T7']],
