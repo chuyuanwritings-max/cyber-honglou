@@ -351,7 +351,8 @@ const BEINGS=[
  {id:'dew',n:'露水瓶',kind:'gem',desc:'每关袋里 +2 {D}'}
 ];
 const SHOP=BEINGS;
-const BK={plant:{emb:'seedpack',need:3},animal:{emb:'egg',need:4},gem:{emb:'ore',need:5}};
+/* 园子里养东西要等真实时间：花草 3 小时、动物 1 天、奇珍 3 天；每打完一关长 6%，一份养料长 2% */
+const HR=3600e3;const BK={plant:{emb:'seedpack',need:3,dur:3*HR},animal:{emb:'egg',need:4,dur:24*HR},gem:{emb:'ore',need:5,dur:72*HR}};
 const bOf=id=>BEINGS.find(b=>b.id===id);
 const bimg=(id,cls='')=>img(bOf(id).ico||id,cls);
 
@@ -853,13 +854,29 @@ let G=loadGarden();
 function loadGarden(){try{const d=JSON.parse(localStorage.getItem('dgy-garden')||'null');if(d&&d.inv&&d.placed)return d;}catch(e){}
   return {inv:{T3:2,T4:1},placed:[],seen:{T3:1,T4:1}};}
 function fixGarden(){G.owned=G.owned||{bamboo:1,bag:1};G.emb=G.emb||[];G.fert=G.fert??3;
-  G.plots=G.plots||[{id:'soil',g:1},{id:null,g:0},{id:null,g:0}];G.tick=G.tick||Date.now();
+  G.plots=G.plots||[{id:'soil',f:0.3,t:Date.now()},{id:null,f:0,t:0},{id:null,f:0,t:0}];G.tick=G.tick||Date.now();
+  G.plots.forEach(p=>{if(p.f==null){p.f=p.id?Math.min(1,(p.g||0)/BK[bOf(p.id).kind].need):0;p.t=Date.now();delete p.g;}});
+  G.daily=G.daily||{day:'',items:[]};
   if(!G.v2){G.placed.forEach(o=>{o.x+=3;o.y+=3;});G.v2=1;}}
 fixGarden();
 function dropEmbryo(){const have=new Set([...Object.keys(G.owned),...G.emb,...G.plots.map(p=>p.id).filter(Boolean)]);
   const left=BEINGS.filter(b=>!have.has(b.id));if(!left.length){G.fert+=3;return null;}const b=left[Math.floor(Math.random()*left.length)];G.emb.push(b.id);return b.id;}
-function growPlots(n){G.plots.forEach(p=>{if(p.id)p.g=Math.min(BK[bOf(p.id).kind].need,p.g+n);});}
-function timeGrow(){const step=15*60*1000,k=Math.floor((Date.now()-G.tick)/step);if(k>0){growPlots(k);G.tick+=k*step;saveGarden();}}
+function plotsTick(){const now=Date.now();G.plots.forEach(p=>{if(p.id){p.f=Math.min(1,p.f+(now-p.t)/BK[bOf(p.id).kind].dur);}p.t=now;});}
+function growPlots(n){plotsTick();G.plots.forEach(p=>{if(p.id)p.f=Math.min(1,p.f+0.06*n);});}
+const leftT=p=>{const ms=(1-p.f)*BK[bOf(p.id).kind].dur,m=Math.ceil(ms/60000);return m>=1440?Math.floor(m/1440)+'天'+Math.floor(m%1440/60)+'时':m>=60?Math.floor(m/60)+'时'+(m%60)+'分':m+'分';};
+/* 每天早上 5 点，园子里冒出几样小东西可以捡（像动森每天的果子、贝壳） */
+const dayKey=()=>{const d=new Date(Date.now()-5*HR);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();};
+function dailySpawn(){const k=dayKey();if(G.daily.day===k)return;const size=LEVELS[lvOf(baseBeauty())].size,off=Math.floor((GN-size)/2);
+  const free=[];for(let y=off;y<off+size;y++)for(let x=off;x<off+size;x++)if(!G.placed.some(o=>o.x===x&&o.y===y))free.push([x,y]);shuffle(free);
+  const kinds=['dew','dew','petal','petal','mat','emb'];const n=3+Math.floor(Math.random()*2);
+  G.daily={day:k,items:free.slice(0,n).map(([x,y],i)=>({x,y,k:i===0&&Math.random()<0.35?'emb':kinds[Math.floor(Math.random()*5)]}))};saveGarden();}
+function pickDaily(c,r){const i=G.daily.items.findIndex(o=>o.x===c&&o.y===r);if(i<0)return false;const o=G.daily.items.splice(i,1)[0];
+  if(o.k==='dew'){G.fert+=3;gTipT('露水 · 养料 +3');}
+  else if(o.k==='petal'){G.fert+=1;const m=['T3','T3','T4'][Math.floor(Math.random()*3)];G.inv[m]=(G.inv[m]||0)+1;G.seen[m]=1;gTipT(`落花 · ${NAME[m]} +1 · 养料 +1`);}
+  else if(o.k==='mat'){const m=['T4','T5','R2'][Math.floor(Math.random()*3)];G.inv[m]=(G.inv[m]||0)+1;G.seen[m]=1;gTipT(`捡到 ${NAME[m]}`);}
+  else{const e=dropEmbryo();gTipT(e?'捡到一颗胚！去苗圃种下':'养料 +3');}
+  gPuff(c,r,[PAL.y,PAL.W,PAL.l,PAL.m]);[0,1,2].forEach(j=>tone(SCALE_NOTES[j+4],0.08,'square',0.035,j*0.06));saveGarden();gUI();return true;}
+function timeGrow(){plotsTick();dailySpawn();saveGarden();}
 function saveGarden(){try{localStorage.setItem('dgy-garden',JSON.stringify(G));}catch(e){}}
 function commitEarn(){const e=S.earn||{};for(const k in e){G.inv[k]=(G.inv[k]||0)+e[k];G.seen[k]=1;}S.earn={};saveGarden();return e;}
 function earnRow(){const e=S.lastEarn||{};const ks=MATS.filter(k=>e[k]);if(!ks.length)return '';
@@ -898,8 +915,8 @@ function gUI(){
   document.querySelectorAll('#gInv [data-k]').forEach(b=>b.addEventListener('click',()=>{gSel=b.dataset.k;gUI();tone(500,0.04,'square',0.03);}));
   document.getElementById('gNursHead').innerHTML=`${img('seedpack','s')}<span class="lbl">苗圃</span><span style="flex:1"></span>${img('fert','s')}<span class="kw">${G.fert}</span>${G.emb.length?' · '+G.emb.map(id=>img(BK[bOf(id).kind].emb,'s')).join(''):''}`;
   document.getElementById('gPlots').innerHTML=G.plots.map((p,i)=>{if(!p.id)return `<button class="plot" data-p="${i}" ${G.emb.length?'':'disabled'}>${img('fert','s').replace('ico s','ico s no')}<span>${G.emb.length?'种下':'空'}</span></button>`;
-    const b=bOf(p.id),need=BK[b.kind].need,ready=p.g>=need;
-    return `<button class="plot ${ready?'ready':''}" data-p="${i}">${ready?bimg(p.id):img(BK[b.kind].emb)}<span>${ready?'收':p.g+'/'+need}</span>${ready?'':`<span class="gb"><i style="width:${p.g/need*100}%"></i></span>`}</button>`;}).join('')+
+    const b=bOf(p.id),ready=p.f>=1;
+    return `<button class="plot ${ready?'ready':''}" data-p="${i}">${ready?bimg(p.id):img(BK[b.kind].emb)}<span>${ready?'收':leftT(p)}</span>${ready?'':`<span class="gb"><i style="width:${Math.round(p.f*100)}%"></i></span>`}</button>`;}).join('')+
     `<button class="plot" disabled title="牌库">${img('bag','s')}<span>${Object.keys(G.owned).length}/${BEINGS.length}</span></button>`;
   document.querySelectorAll('#gPlots [data-p]').forEach(btn=>btn.addEventListener('click',()=>plotTap(+btn.dataset.p)));
   const seenN=MATS.filter(k=>G.seen[k]).length;
@@ -914,6 +931,7 @@ gcv.addEventListener('click',e=>{if(Date.now()-gDragged<120)return;
   const r=gcv.getBoundingClientRect();const lx=(e.clientX-r.left)/r.width*gbuf.width,ly=(e.clientY-r.top)/r.height*gbuf.height;
   const c=Math.floor((lx-GM)/GT),rr=Math.floor((ly-GM)/GT);const size=LEVELS[lvOf(beauty())].size,off=Math.floor((GN-size)/2);
   if(c<off||rr<off||c>=off+size||rr>=off+size)return gTipT('园子还没这么大，再摆美一点就扩大');
+  if(pickDaily(c,rr))return;
   const i=G.placed.findIndex(o=>o.x===c&&o.y===rr);
   if(i>=0){const o=G.placed.splice(i,1)[0];G.inv[o.id]=(G.inv[o.id]||0)+1;gSel=o.id;gPuff(c,rr,[PAL.W,PAL.s]);tone(330,0.06,'triangle',0.04,0,0.7);}
   else if(gSel&&G.inv[gSel]>0){const before=lvOf(beauty());G.placed.push({id:gSel,x:c,y:rr});G.inv[gSel]--;gPuff(c,rr,[PAL.p,PAL.y,PAL.g,PAL.W]);tone(660,0.07,'square',0.04);tone(990,0.08,'triangle',0.03,0.05);
@@ -924,11 +942,12 @@ gcv.addEventListener('click',e=>{if(Date.now()-gDragged<120)return;
   saveGarden();gUI();
 });
 function plotTap(i){const p=G.plots[i];
-  if(!p.id){if(!G.emb.length)return;p.id=G.emb.shift();p.g=0;tone(440,0.08,'triangle',0.04);gTipT('种下了，打一关长一截，养料能催');}
-  else{const b=bOf(p.id),need=BK[b.kind].need;
-    if(p.g>=need){G.owned[p.id]=1;p.id=null;p.g=0;[0,1,2,3].forEach(j=>tone(SCALE_NOTES[j+3],0.12,'square',0.04,j*0.08));for(let k=0;k<6;k++)gPuff(5+Math.floor(Math.random()*6),5+Math.floor(Math.random()*6),[PAL.y,PAL.m,PAL.W,PAL.l]);gTipT(`养成：${b.n}！以后花篮里会出现`);}
-    else if(G.fert>0){G.fert--;p.g++;tone(600,0.06,'square',0.03);gTipT('施了养料');}
-    else gTipT('没有养料了，过关省步数能攒');}
+  plotsTick();
+  if(!p.id){if(!G.emb.length)return;p.id=G.emb.shift();p.f=0;p.t=Date.now();tone(440,0.08,'triangle',0.04);gTipT(`种下了 · 要 ${leftT(p)} · 打关、养料能催`);}
+  else{const b=bOf(p.id);
+    if(p.f>=1){G.owned[p.id]=1;p.id=null;p.f=0;[0,1,2,3].forEach(j=>tone(SCALE_NOTES[j+3],0.12,'square',0.04,j*0.08));for(let k=0;k<6;k++)gPuff(5+Math.floor(Math.random()*6),5+Math.floor(Math.random()*6),[PAL.y,PAL.m,PAL.W,PAL.l]);gTipT(`养成：${b.n}！以后花篮里会出现`);}
+    else if(G.fert>0){const n=Math.min(5,G.fert);G.fert-=n;p.f=Math.min(1,p.f+0.02*n);tone(600,0.06,'square',0.03);gTipT(`施了 ${n} 份养料 · 还要 ${p.f>=1?'0分':leftT(p)}`);}
+    else gTipT('没有养料了 · 过关时空地变养料');}
   saveGarden();gUI();}
 function gTipT(t){document.getElementById('gTip').textContent=t;}
 function gPuff(c,r,cols){const x=GM+c*GT+GT/2,y=GM+r*GT+GT/2;for(let i=0;i<14;i++){const a=Math.random()*6.28,sp=0.4+Math.random()*1.2;gFx.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-0.5,life:18+Math.random()*10,c:cols[i%cols.length]});}}
@@ -1023,7 +1042,12 @@ function gFrame(){
     items.push({foot:ay+7,draw:()=>{if(!fly){gg.fillStyle='rgba(0,0,8,.4)';gg.fillRect(ax+1,ay+6,5,1);}gg.drawImage(mini(b.ico),ax,ay-(fly?6+hop*2:hop));}});});
   const w=gWalker;if(w){const d=Math.hypot(w.tx-w.x,w.ty-w.y);if(d<1){w.t++;if(w.t>60){w.t=0;w.tx=GM+(off+0.5+Math.random()*(size-1))*GT;w.ty=GM+(off+1+Math.random()*(size-1.2))*GT;}}else{w.x+=(w.tx-w.x)/d*0.3;w.y+=(w.ty-w.y)/d*0.3;}
     items.push({foot:Math.round(w.y),draw:()=>{const x=Math.round(w.x)-5,y=Math.round(w.y)-17;gg.fillStyle='rgba(0,0,8,.45)';gg.fillRect(x+2,y+16,7,2);drawWalker(x,y,w.id,d>=1&&Math.floor(gTick/10)%2);}});}
+  (G.daily.items||[]).forEach(o=>{const x=GM+o.x*GT,y=GM+o.y*GT,bob=Math.floor((gTick+o.x*7)/14)%2;
+    items.push({foot:y+GT-1,draw:()=>{const col={dew:PAL.b,petal:PAL.m,mat:PAL.e,emb:PAL.y}[o.k];gg.fillStyle='rgba(0,0,8,.35)';gg.fillRect(x+4,y+GT-2,4,1);
+      gg.fillStyle=PAL.k;gg.fillRect(x+4,y+4-bob,4,4);gg.fillStyle=col;gg.fillRect(x+5,y+5-bob,2,2);
+      if(Math.floor((gTick+o.y*11)/20)%3===0){gg.fillStyle=PAL.W;gg.fillRect(x+2,y+2-bob,1,1);gg.fillRect(x+9,y+3-bob,1,1);gg.fillRect(x+6,y+1-bob,1,1);}}});});
   items.sort((a,b)=>a.foot-b.foot).forEach(it=>it.draw());
+  if(gTick%60===0){plotsTick();gUI();}
   gg.imageSmoothingEnabled=false;gFx.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.06;p.life--;gg.fillStyle=p.c;gg.fillRect(Math.round(p.x),Math.round(p.y),1,1);});gFx=gFx.filter(p=>p.life>0);
   gctx.imageSmoothingEnabled=false;gctx.clearRect(0,0,gcv.width,gcv.height);gctx.drawImage(gbuf,0,0,gcv.width,gcv.height);
 }
